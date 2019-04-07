@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DEV index</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+    <textarea id="content" style="width: 500px; height: 300px; display: block;">{ "value1":"testipeli", "value2":"Draugrist", "value3":"3" }</textarea>
+    <button id="submit">Send data</button> <button id="settings">Update settings</button>
+    <script type="text/javascript">
+        var success = function(data) {
+        };
+        var postTurn = function() {
+            $.ajax({
+                url: 'turn',
+                type: 'post',
+                data: $('#content').text(),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json'
+            });
+        };
+        var updateSettings = function() {
+            $.ajax({
+                headers: {
+                    'Authorization': '48dda702-145d-456b-8217-6f0a60cda97a'
+                },
+                url: 'update-settings',
+                method: 'post'
+            });
+        };
+        $(function() {
+            $('#submit').click(postTurn);
+            $('#settings').click(updateSettings);
+        });
+    </script>
+</body>
+</html>

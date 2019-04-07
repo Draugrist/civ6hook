@@ -1,0 +1,10 @@
+{:auth-token "your-secret-key"
+ :email      {:host "smtp.gmail.com"
+              :user "username"
+              :pass "supersecret"
+              :ssl  true}
+ :message    {:from    "sender@example.com"
+              :subject "It's your turn in game {{game}}"
+              :body    "Hey {{player}}! Take your turn {{turn}} in {{game}}!"}
+ :users      {"user1" "email1@example.com"
+              "user2" "email2@example.com"}}
