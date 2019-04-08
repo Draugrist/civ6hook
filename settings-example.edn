@@ -1,4 +1,5 @@
-{:auth-token "your-secret-key"
+{:dev        true
+ :auth-token "your-secret-key"
  :email      {:host "smtp.gmail.com"
               :user "username"
               :pass "supersecret"

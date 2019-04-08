@@ -10,10 +10,10 @@
 (defn create-message [email game player turn]
   (let [{:keys [from subject body]} (settings/message-settings)
         new-subject (s/replace subject "{{game}}" game)
-        new-body (-> body
-                     (s/replace "{{game}}" game)
-                     (s/replace "{{turn}}" turn)
-                     (s/replace "{{player}}" player))]
+        new-body    (-> body
+                        (s/replace "{{game}}" game)
+                        (s/replace "{{turn}}" turn)
+                        (s/replace "{{player}}" player))]
     {:to      email
      :from    from
      :subject new-subject
@@ -25,31 +25,46 @@
     (create-message email game player turn))
   "OK")
 
+(defn unknown-player [player]
+  "Log but still return OK to webhook caller"
+  (println (str "Unknown player " player))
+  "OK")
+
 (defn handle-turn [{:keys [value1 value2 value3]}]
   (if-let [email (settings/email-for-user value2)]
     (send-email email value1 value2 value3)
-    (println (str "Unknown user " value2))))
+    (unknown-player value2)))
 
 (defn check-token [headers]
   (if-let [auth-token (get headers "authorization")]
     (= auth-token (settings/auth-token))))
 
-(defn update-settings [request]
-  (when (check-token (:headers request))
-    (settings/read-settings!)))
+(defn update-settings [_]
+  (settings/read-settings!))
 
-(defroutes app-routes
-  (POST "/turn" request (handle-turn (:body request)))
-  (POST "/update-settings" request (update-settings request))
-  (route/not-found "Not Found"))
+(defn check-auth-token [handler]
+  (fn [request]
+    (if (check-token (:headers request))
+      (handler request)
+      {:status 401})))
+
+(defroutes public-routes
+  (POST "/turn" request (handle-turn (:body request))))
+
+(defroutes admin-routes
+  (POST "/update-settings" [] update-settings))
 
 (def app
-  (-> app-routes
+  (-> (routes
+        public-routes
+        (wrap-routes admin-routes check-auth-token)
+        (route/not-found "Not Found"))
       (wrap-json-body {:keywords? true})
-      (wrap-defaults {:params    {:urlencoded true
-                                  :keywordize true}
-                      :responses {:not-modified-responses true
-                                  :absolute-redirects     true
-                                  :content-types          true
-                                  :default-charset        "utf-8"}
-                      :static    {:resources "public"}})))
+      (wrap-defaults (cond->
+                       {:params    {:urlencoded true
+                                    :keywordize true}
+                        :responses {:not-modified-responses true
+                                    :absolute-redirects     true
+                                    :content-types          true
+                                    :default-charset        "utf-8"}}
+                       (settings/dev?) (assoc :static {:resources "public"})))))

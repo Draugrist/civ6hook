@@ -4,6 +4,7 @@
 (def settings (atom {}))
 
 (defn read-settings! []
+  (println "Reading settings")
   (reset! settings (edn/read-string (slurp "settings.edn"))))
 
 (defn email-settings []
@@ -17,3 +18,6 @@
 
 (defn message-settings []
   (:message @settings))
+
+(defn dev? []
+  (:dev @settings))

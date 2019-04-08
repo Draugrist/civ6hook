@@ -14,7 +14,7 @@
             $.ajax({
                 url: 'turn',
                 type: 'post',
-                data: $('#content').text(),
+                data: $('#content').val(),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json'
             });
