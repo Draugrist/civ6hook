@@ -1,4 +1,4 @@
-(defproject civ6hook "0.1.0-SNAPSHOT"
+(defproject civ6hook "0.1.0"
   :description "Civ 6 webhook email notifier"
   :min-lein-version "2.0.0"
 
