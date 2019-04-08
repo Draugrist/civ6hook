@@ -1,5 +1,6 @@
 (ns civ6hook.handler
   (:require [civ6hook.settings :as settings]
+            [civ6hook.stats :as stats]
             [clojure.string :as s]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -31,6 +32,7 @@
   "OK")
 
 (defn handle-turn [{:keys [value1 value2 value3]}]
+  (stats/set-current-player-and-turn! value1 value2 value3)
   (if-let [email (settings/email-for-user value2)]
     (send-email email value1 value2 value3)
     (unknown-player value2)))
@@ -49,7 +51,8 @@
       {:status 401})))
 
 (defroutes public-routes
-  (POST "/turn" request (handle-turn (:body request))))
+  (POST "/turn" request (handle-turn (:body request)))
+  (GET "/stats" [] (str (stats/get-game-states))))
 
 (defroutes admin-routes
   (POST "/update-settings" [] update-settings))
