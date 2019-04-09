@@ -1,12 +1,14 @@
 (ns civ6hook.handler
   (:require [civ6hook.settings :as settings]
             [civ6hook.stats :as stats]
+            [clojure.java.io :as io]
             [clojure.string :as s]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [postal.core :as postal]
             [ring.middleware.defaults :refer [wrap-defaults]]
-            [ring.middleware.json :refer [wrap-json-body]]))
+            [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
+            [ring.util.response :refer [response file-response not-found]]))
 
 (defn create-message [email game player turn]
   (let [{:keys [from subject body]} (settings/message-settings)
@@ -50,9 +52,15 @@
       (handler request)
       {:status 401})))
 
+(defn index-page []
+  (if (settings/dev?)
+    (slurp (io/resource "public/index.html"))
+    (not-found "Not Found")))
+
 (defroutes public-routes
   (POST "/turn" request (handle-turn (:body request)))
-  (GET "/stats" [] (str (stats/get-game-states))))
+  (GET "/stats" [] (response (stats/get-game-states)))
+  (GET "/" [] (index-page)))
 
 (defroutes admin-routes
   (POST "/update-settings" [] update-settings))
@@ -63,11 +71,10 @@
         (wrap-routes admin-routes check-auth-token)
         (route/not-found "Not Found"))
       (wrap-json-body {:keywords? true})
-      (wrap-defaults (cond->
-                       {:params    {:urlencoded true
-                                    :keywordize true}
-                        :responses {:not-modified-responses true
-                                    :absolute-redirects     true
-                                    :content-types          true
-                                    :default-charset        "utf-8"}}
-                       (settings/dev?) (assoc :static {:resources "public"})))))
+      wrap-json-response
+      (wrap-defaults {:params    {:urlencoded true
+                                  :keywordize true}
+                      :responses {:not-modified-responses true
+                                  :absolute-redirects     true
+                                  :content-types          true
+                                  :default-charset        "utf-8"}})))

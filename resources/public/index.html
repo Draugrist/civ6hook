@@ -6,7 +6,7 @@
 </head>
 <body>
     <textarea id="content" style="width: 500px; height: 300px; display: block;">{ "value1":"testipeli", "value2":"Draugrist", "value3":"3" }</textarea>
-    <button id="submit">Send data</button> <button id="settings">Update settings</button>
+    <button id="submit">Send data</button> <button id="settings">Update settings</button> <button id="stats">Get stats</button>
     <script type="text/javascript">
         var success = function(data) {
         };
@@ -28,9 +28,13 @@
                 method: 'post'
             });
         };
+        var getStats = function() {
+          $.get('stats');
+        };
         $(function() {
             $('#submit').click(postTurn);
             $('#settings').click(updateSettings);
+            $('#stats').click(getStats);
         });
     </script>
 </body>
