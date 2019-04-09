@@ -8,7 +8,7 @@
             [postal.core :as postal]
             [ring.middleware.defaults :refer [wrap-defaults]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
-            [ring.util.response :refer [response file-response not-found]]))
+            [ring.util.response :refer [response file-response not-found content-type]]))
 
 (defn create-message [email game player turn]
   (let [{:keys [from subject body]} (settings/message-settings)
@@ -55,7 +55,8 @@
 (defn index-page []
   (if (settings/dev?)
     (slurp (io/resource "public/index.html"))
-    (not-found "Not Found")))
+    ; For some reason not-found returns application/octet-stream as content type
+    (content-type (not-found "Not Found") "text/html; charset=UTF-8")))
 
 (defroutes public-routes
   (POST "/turn" request (handle-turn (:body request)))
