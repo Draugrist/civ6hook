@@ -1,19 +1,19 @@
 # civ6hook
 
-FIXME
+A simple Clojure server for listening to incoming Civilization IV Play by Cloud webhook requests
+and sending email turn notifications.
 
-## Prerequisites
+## Running in development mode
 
-You will need [Leiningen][] 2.0.0 or above installed.
-
-[leiningen]: https://github.com/technomancy/leiningen
-
-## Running
-
-To start a web server for the application, run:
+To start a web server for the application, copy settings-example.edn to settings.edn and adjust as needed.
+Then run:
 
     lein ring server
 
-## License
+In develop mode, you can access a dev helper site at
 
-Copyright © 2019 FIXME
+    http://localhost:3000/
+
+## Production build
+
+    lein ring uberjar
