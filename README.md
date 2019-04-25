@@ -1,6 +1,6 @@
 # civ6hook
 
-A simple Clojure server for listening to incoming Civilization IV Play by Cloud webhook requests
+A simple Clojure server for listening to incoming Civilization VI Play by Cloud webhook requests
 and sending email turn notifications.
 
 ## Running in development mode
