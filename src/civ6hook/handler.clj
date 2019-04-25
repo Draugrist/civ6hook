@@ -28,8 +28,9 @@
     (create-message email game player turn))
   "OK")
 
-(defn unknown-player [player]
+(defn unknown-player
   "Log but still return OK to webhook caller"
+  [player]
   (println (str "Unknown player " player))
   "OK")
 
