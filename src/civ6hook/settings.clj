@@ -1,11 +1,17 @@
 (ns civ6hook.settings
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]
+            [mount.core :as m]
+            [taoensso.timbre :as log]))
 
-(def settings (atom {}))
+(defn- read-settings []
+  (edn/read-string (slurp "settings.edn")))
+
+(m/defstate settings
+  :start (atom (read-settings)))
 
 (defn read-settings! []
-  (println "Reading settings")
-  (reset! settings (edn/read-string (slurp "settings.edn"))))
+  (log/info "Reading settings")
+  (reset! settings (read-settings)))
 
 (defn email-settings []
   (:email @settings))

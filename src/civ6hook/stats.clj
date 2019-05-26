@@ -1,7 +1,9 @@
 (ns civ6hook.stats
-  (:require [java-time :as jt]))
+  (:require [java-time :as jt]
+            [mount.core :as m]))
 
-(def db (atom {}))
+(m/defstate db
+  :start (atom {}))
 
 (defn- set-game-state! [game state]
   (swap! db assoc game state))

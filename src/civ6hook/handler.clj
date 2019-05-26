@@ -6,6 +6,7 @@
             [compojure.core :refer :all]
             [compojure.route :as route]
             [postal.core :as postal]
+            [taoensso.timbre :as log]
             [ring.middleware.defaults :refer [wrap-defaults]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [ring.util.response :refer [response file-response not-found content-type]]))
@@ -31,7 +32,7 @@
 (defn unknown-player
   "Log but still return OK to webhook caller"
   [player]
-  (println (str "Unknown player " player))
+  (log/warn (str "Unknown player " player))
   "OK")
 
 (defn handle-turn [{:keys [value1 value2 value3]}]
