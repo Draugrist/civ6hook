@@ -9,6 +9,7 @@
             [taoensso.timbre :as log]
             [ring.middleware.defaults :refer [wrap-defaults]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
+            [ring.middleware.accept :as rma]
             [ring.util.response :refer [response file-response not-found content-type]]))
 
 (defn create-message [email game player turn]
@@ -65,6 +66,16 @@
   (GET "/stats" [] (response (stats/get-game-states)))
   (GET "/" [] (index-page)))
 
+(defn wrap-render [handler]
+  (fn [request]
+    (let [mime (-> request :accept :mime)
+          resp (handler request)]
+      (if-let [render-fn (get (-> resp :body meta :render) mime)]
+        (-> resp
+            (update :body render-fn)
+            (assoc-in [:headers "Content-Type"] mime))
+        resp))))
+
 (defroutes admin-routes
   (POST "/update-settings" [] update-settings))
 
@@ -73,8 +84,10 @@
         public-routes
         (wrap-routes admin-routes check-auth-token)
         (route/not-found "Not Found"))
+      wrap-render
       (wrap-json-body {:keywords? true})
       wrap-json-response
+      (rma/wrap-accept {:mime ["text/html" "application/json"]})
       (wrap-defaults {:params    {:urlencoded true
                                   :keywordize true}
                       :responses {:not-modified-responses true

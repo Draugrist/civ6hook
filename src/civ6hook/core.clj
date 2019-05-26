@@ -12,7 +12,7 @@
                   (.writeString jsonGenerator (jt/format "yyyy-MM-dd'T'HH:mm:ssZ" c))))
 
 (m/defstate server
-  :start (let [server (jetty/run-jetty api/app {:join? false :port 3000})]
+  :start (let [server (jetty/run-jetty #'api/app {:join? false :port 3000})]
            (log/info "Server running")
            server)
   :stop  (do

@@ -7,9 +7,11 @@
                  [compojure "1.6.1"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-json "0.4.0"]
-                 [clojure.java-time "0.3.2"]
+                 [ring-middleware-accept "2.0.3"]
                  [ring/ring-jetty-adapter "1.7.1"]
+                 [clojure.java-time "0.3.2"]
                  [mount "0.1.16"]
+                 [hiccup "1.0.5"]
                  [com.taoensso/timbre "4.10.0"]]
 
   :plugins [[lein-ring "0.12.5"]]
