@@ -1,10 +1,35 @@
 (ns civ6hook.stats
   (:require [java-time :as jt]
             [hiccup.core :as h]
-            [mount.core :as m]))
+            [mount.core :as m]
+            [taoensso.timbre :as log]
+            [cheshire.core :as json])
+  (:import (java.io FileNotFoundException)))
+
+(defonce STATE_FILE "civ6hook-state.json")
+
+(defn persist-state! [state]
+  (spit STATE_FILE (json/generate-string state)))
+
+(defn read-state! []
+  (try
+    (clojure.walk/postwalk
+      (fn [x]
+        (if (and (vector? x) (= :timestamp (first x)))
+          [:timestamp (jt/zoned-date-time "yyyy-MM-dd'T'HH:mm:ssZ" (second x) (jt/zone-offset 0))]
+          x))
+      (-> (slurp STATE_FILE)
+          (json/parse-string true)))
+    (catch FileNotFoundException _
+      (log/info "No state file found, initializing empty state")
+      {})))
 
 (m/defstate db
-  :start (atom {}))
+  :start (atom (read-state!))
+  :stop (reset! db {}))
+
+(m/defstate db-persister
+  :start (add-watch db "persister" (fn [_ _ _ state] (persist-state! state))))
 
 (defn- set-game-state! [game state]
   (swap! db assoc game state))

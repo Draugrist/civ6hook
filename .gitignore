@@ -11,3 +11,4 @@ pom.xml.asc
 .idea/
 *.iml
 settings.edn
+civ6hook-state.json
