@@ -6,7 +6,8 @@
                  [com.draines/postal "2.0.3"]
                  [compojure "1.6.1"]
                  [ring/ring-defaults "0.3.2"]
-                 [ring/ring-json "0.4.0"]]
+                 [ring/ring-json "0.4.0"]
+                 [clojure.java-time "0.3.2"]]
 
   :plugins [[lein-ring "0.12.5"]]
 
