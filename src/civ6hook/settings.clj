@@ -4,13 +4,13 @@
             [taoensso.timbre :as log]))
 
 (defn- read-settings []
+  (log/info "Reading settings")
   (edn/read-string (slurp "settings.edn")))
 
 (m/defstate settings
   :start (atom (read-settings)))
 
 (defn read-settings! []
-  (log/info "Reading settings")
   (reset! settings (read-settings)))
 
 (defn email-settings []

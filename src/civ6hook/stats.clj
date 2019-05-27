@@ -37,16 +37,20 @@
     update
     (keyword game)
     (fn [game-data]
-      (-> game-data
-          (assoc :player player
-                 :turn turn
-                 :timestamp (jt/zoned-date-time (jt/system-clock "UTC")))
-          (update-in
-            [:turn-times (keyword player)]
-            conj
-            (jt/time-between
-              (:timestamp game-data)
-              (jt/zoned-date-time (jt/system-clock "UTC")) :minutes))))))
+      (let [current-player    (:player game-data)
+            current-timestamp (:timestamp game-data)]
+        (-> game-data
+            (assoc :player player
+                   :turn turn
+                   :timestamp (jt/zoned-date-time (jt/system-clock "UTC")))
+            (update-in
+              [:turn-times (keyword current-player)]
+              conj
+              (if current-timestamp
+                (jt/time-between
+                  current-timestamp
+                  (jt/zoned-date-time (jt/system-clock "UTC")) :minutes)
+                0)))))))
 
 (defn- time-str-formatter [time-name mins-per-unit]
   (fn [m]
