@@ -90,6 +90,7 @@
       (rma/wrap-accept {:mime ["text/html" "application/json"]})
       (wrap-defaults {:params    {:urlencoded true
                                   :keywordize true}
+                      :static    {:resources "public/img"}
                       :responses {:not-modified-responses true
                                   :absolute-redirects     true
                                   :content-types          true
