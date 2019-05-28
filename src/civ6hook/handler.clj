@@ -42,6 +42,11 @@
     (send-email email value1 value2 value3)
     (unknown-player value2)))
 
+(defn manual-turn [{:keys [game current next]}]
+  (let [game-data (get (stats/get-game-states) (keyword game))]
+    (if (= current (:player game-data))
+      (handle-turn {:value1 game :value2 next :value3 (:turn game-data)}))))
+
 (defn check-token [headers]
   (if-let [auth-token (get headers "authorization")]
     (= auth-token (settings/auth-token))))
@@ -63,6 +68,7 @@
 
 (defroutes public-routes
   (POST "/turn" request (handle-turn (:body request)))
+  (POST "/manualturn" request (manual-turn (:body request)))
   (GET "/stats" [] (response (stats/get-game-states)))
   (GET "/" [] (index-page)))
 
